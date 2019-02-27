@@ -5,19 +5,24 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack-dev-server --config=webpack.config.js",
     "build": "rimraf dist && webpack",
     "build:report": "cross-env NODE_ENV=production npm_config_report=true npm run build"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "jquery": "^3.2.1"
+    "jquery": "^3.2.1",
+    "axios": "^0.18.0",
+    "moment": "^2.23.0"
   },
   "devDependencies": {
+    "autodll-webpack-plugin": "^0.4.2",
     "cross-env": "^5.2.0",
+    "html-webpack-plugin": "^2.30.1",
     "rimraf": "^2.6.2",
     "webpack": "^3.12.0",
     "webpack-bundle-analyzer": "2.13.1",
-    "webpack-dev-server": "^2.10.1"
+    "webpack-dev-server": "^2.11.3"
   }
 }
