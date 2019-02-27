@@ -2,7 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 const packagejson = require("./package.json");
 
-const config = {
+const webpackConfig = {
   entry: {
     first: "./src/first.js",
     second: "./src/second.js",
@@ -10,10 +10,20 @@ const config = {
   },
   output: {
     path: path.resolve(__dirname, './dist'),
-    filename: '[name].js'
+    filename: '[name].js',
+    chunkFilename: "[name].[hash:5].chunk.js"
   },
   plugins: [
-    // 第二种方法把它们分离开来，就是利用minChunks作为函数的时候，说一下minChunks作为函数两个参数的含义：
+    new webpack.optimize.CommonsChunkPlugin({
+        name: ['vendor','runtime'],
+        filename: '[name].js',
+        minChunks: Infinity
+    }),
+   new webpack.optimize.CommonsChunkPlugin({
+        children: true,
+        async: 'children-async'
+    })
+    /* // 第二种方法把它们分离开来，就是利用minChunks作为函数的时候，说一下minChunks作为函数两个参数的含义：
     // - module：当前chunk及其包含的模块
     // - count：当前chunk及其包含的模块被引用的次数
     // minChunks作为函数会遍历每一个入口文件及其依赖的模块，返回一个布尔值，为true代表当前正在处理的文件（module.resource）合并到commons chunk中，为false则不合并。
@@ -36,8 +46,33 @@ const config = {
       name: 'runtime',
       filename: '[name].js',
       chunks: ['vendor'] // 从first.js和second.js中抽取commons chunk
-    })
+    }) */
   ]
 }
 
-module.exports = config;
+if (process.env.npm_config_generate_report || process.env.npm_config_report) {
+  const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+
+  // 在线分析，打开浏览器
+  if (process.env.npm_config_report) {
+    webpackConfig.plugins.push(
+      new BundleAnalyzerPlugin({
+        analyzerPort: 8080,
+        generateStatsFile: false
+      })
+    )
+  }
+
+  // 静态分析，只生成分析结果html
+  if (process.env.npm_config_generate_report) {
+    webpackConfig.plugins.push(
+      new BundleAnalyzerPlugin({
+        analyzerMode: 'static',
+        reportFilename: 'bundle-report.html',
+        openAnalyzer: false
+      })
+    )
+  }
+}
+
+module.exports = webpackConfig;
