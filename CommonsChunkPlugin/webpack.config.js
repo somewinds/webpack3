@@ -14,8 +14,14 @@ const config = {
   },
   plugins: [
     new webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
-      filename: '[name].js'
+      name: ['vendor', 'runtime'],
+      filename: '[name].js',
+      minChunks: Infinity
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'common',
+      filename: '[name].js',
+      chunks: ['first', 'second'] // 从first.js和second.js中抽取commons chunk
     })
   ]
 }
